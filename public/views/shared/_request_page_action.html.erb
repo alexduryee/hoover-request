@@ -1,0 +1,22 @@
+<% if defined?(@request) && !@request.nil? && pass_email_requirements?(@result) %>
+	<%# AD - get the EAD ID, tack on .xml if missing, and set the target to Aeon or the help page (if EAD ID is missing)%>
+	<% ead_id = @result.ead_id if @result.is_a?(Resource) %>
+	<% ead_id << '.xml' if ead_id && ead_id.strip !~ /\.xml$/ %>
+	<% request_url = (ead_id ? "https://hoover.aeon.atlas-sys.com/aeon.dll" : "https://stanford.service-now.com/it_services") %>
+	<%# AD - replacing the POST-to-a-form with a GET-to-a-link %>
+	<%= form_tag request_url, :id => 'request_sub', :method => 'get' do |f| %>
+		<%# AD - if we're going to Aeon, set the URL parameters %>
+		<%# AD - if we aren't going to Aeon, set parameters for Stanford help %>
+		<%# AD - this replaces the default request_hidden set, since we don't pass those to Aeon %>
+		<% if ead_id %>
+	  		<%= hidden_field_tag "Action", "10" %>
+	  		<%= hidden_field_tag "Form", "31" %>
+	  		<%= hidden_field_tag "Value", "https://voro.cdlib.org/oac-ead/prime2002/hoover/" + ead_id %>
+		<% else %>
+	  		<%= hidden_field_tag "id", "sc_cat_item" %>
+	  		<%= hidden_field_tag "sys_id", "7fd988bf1b5fb34094c0fee58d4bcb86" %>
+		<% end %>
+		<button type="submit" class="btn page_action request  btn-default" title="<%= t('actions.request') %>">
+		<i class="fa fa-bullhorn fa-3x"></i><br/><%= t('actions.request') %></button>
+	<% end %>
+<% end %>

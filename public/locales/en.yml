@@ -1,0 +1,4 @@
+en:
+  plugins:
+    requests:
+      request: "Request to the reading room"
